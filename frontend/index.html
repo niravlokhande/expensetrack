@@ -16,6 +16,8 @@
   <input id="category" placeholder="Category">
   <button onclick="addExpense()">Add</button>
   <ul id="list"></ul>
+  <h2>Summary by category</h2>
+  <ul id="summary"></ul>
 
   <script>
     async function load() {
@@ -26,6 +28,17 @@
       data.forEach(e => {
         const li = document.createElement('li');
         li.textContent = `${e.title} - ${e.amount} (${e.category})`;
+        ul.appendChild(li);
+      });
+    }
+    async function loadSummary() {
+      const res = await fetch('/api/summary');
+      const data = await res.json();
+      const ul = document.getElementById('summary');
+      ul.innerHTML = '';
+      data.forEach(s => {
+        const li = document.createElement('li');
+        li.textContent = `${s.category}: ${s.total} (${s.count} items)`;
         ul.appendChild(li);
       });
     }
@@ -40,9 +53,11 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body)
       });
-      load();
+          load();
+    loadSummary();
     }
     load();
+    loadSummary();
   </script>
 </body>
 </html>
